@@ -1,7 +1,13 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize(process.env.PG_DATABASE_URL, {
+const sequelize = new Sequelize(process.env.STAGING_DATABASE_URL, {
   dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,          // Ensures SSL is required
+      rejectUnauthorized: false // Disable SSL certificate validation (if needed)
+    },
+  },
   logging: false,
   pool: {
     max: 5,
