@@ -12,6 +12,18 @@ export const getProductById = async (id) => {
     return await Product.findByPk(id);
 }
 
+export const getProductByCategoryId = async (categoryId) => {
+    if (!categoryId) {
+        throw new Error("Category ID is required");
+    }
+
+    return await Product.findAll ({
+        where: {
+            categoryId: categoryId
+        }
+    })
+}
+
 export const updateProduct = async (id, data) => {
     const product = await Product.findByPk(id);
 

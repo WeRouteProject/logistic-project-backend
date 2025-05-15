@@ -44,6 +44,26 @@ export const getProductById = async (req, res) => {
     }
 };
 
+export const getProductByCatId = async (req, res) => {
+    try {
+        
+        const categoryId = req.params.categoryId;
+
+        if (!categoryId) {
+            return res.status(400).json({ message: 'Category ID is required' });
+        }
+
+        const product = await productService.getProductByCategoryId(categoryId);
+        if (!product) return res.status(404).json({ message: 'Product not found in this category' });
+
+        res.status(200).json(product);
+    }
+
+    catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 export const updateProduct = async (req, res) => {
     try {
         const { productName, description, price, categoryId } = req.body;
