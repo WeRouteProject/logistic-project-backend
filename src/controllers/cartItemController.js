@@ -40,8 +40,9 @@ export const updateCart = async (req, res) => {
 export const deleteCartItem = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { productId } = req.params;
-        const result = await removeCartItem(userId, productId);
+        const { cartItemId } = req.params;
+        const result = await removeCartItem(userId, cartItemId);
+        console.log(result, "result");
         res.status(200).json(result);
     } catch (error) {
         res.status(400).json({ error: error.message });

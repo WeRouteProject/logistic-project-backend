@@ -7,6 +7,7 @@ import categoryRoutes from './routes/category.js';
 import productRoutes from './routes/product.js';
 import cartItemRoutes from './routes/cartItem.js';
 import deliveryAssignmentRoutes from './routes/deliveryAssignment.js';
+import customerRoutes from './routes/customers.js';
 
 const { sequelize, connectToDatabase } = db;
 
@@ -28,6 +29,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/', cartItemRoutes);
 app.use('/api/delivery', deliveryAssignmentRoutes);
+app.use('/api/customer', customerRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is working');

@@ -47,12 +47,14 @@ export const updateCartItemQuantity = async (userId, productId, quantity) => {
     return item;
 };
 
-export const removeCartItem = async (userId, productId) => {
-    const deleted = await CartItem.destroy({ where: { userId, productId } });
+export const removeCartItem = async (userId, cartItemId) => {
+    const item= await CartItem.findOne({ where: { cartItemId, userId} });
 
-    if (deleted === 0) {
+    if (item === 0) {
         throw new Error("Cart item not found");
     }
+
+    await item.destroy();
 
     return { message: "Item removed from cart" };
 };

@@ -1,5 +1,5 @@
 import {
-    assignMultipleCartItems,
+    createDeliveryAssignment,
     getAssignementsForDelivery,
     getAssignementsStatus,
     getAllAssignments,
@@ -8,10 +8,12 @@ import {
 } from '../services/DeliveryAssignmentService.js';
 import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
+import { DELIVERY_STATUS } from '../constants/deliveryStatus.js';
 
 export const assignCartItems = async (req, res) => {
     try {
-        const { cartItems,
+        const { 
+            cartItems,
             deliveryBoyId,
             customerName,
             deliveryAddress,
@@ -22,34 +24,47 @@ export const assignCartItems = async (req, res) => {
             return res.status(400).json({ error: 'At least one item should be there in cart to assign' });
         }
 
-        const assignments = [];
+        const cartItemIds = cartItems.map(item => item.cartItemId);
+        const uniqueCartItemIds = [...new Set(cartItemIds)];
+        if (cartItemIds.length !== uniqueCartItemIds.length) {
+            return res.status(400).json({ error: 'Duplicate cartItemIds are not allowed' });
+        }
 
-        for (const item of cartItems) {
-            const cartItem = await CartItem.findByPk(item.cartItemId, {
-                include: [{ model: Product }]
-            });
+         const cartItemDetails = await Promise.all(
+      cartItems.map(async (item) => {
+        const cartItem = await CartItem.findByPk(item.cartItemId, {
+          include: [{ model: Product }]
+        });
 
-            if (!cartItem || !cartItem.Product) {
-                return res.status(400).json({ error: `Invalid cartItem or product for ID: ${item.cartItemId}` });
-            }
+        if (!cartItem || !cartItem.Product) {
+          throw new Error(`Invalid cart item or product for cartItemId: ${item.cartItemId}`);
+        }
 
-            assignments.push({
-                cartItemId: item.cartItemId,
+        return {
+          cartItemId: cartItem.cartItemId,
+          productId: cartItem.Product.id,
+          productName: cartItem.Product.productName,
+          quantity: cartItem.quantity
+        };
+      })
+    );
+
+           const assignmentsToCreate = {
+                cartItems: cartItemDetails,
                 deliveryBoyId,
                 customerName,
                 deliveryAddress,
                 deliveryDate,
-                status,
-                productName: cartItem.Product.productName,
-                productQuantity: cartItem.quantity.toString()
-            });
-        }
+                status: status || DELIVERY_STATUS.ASSIGNED,
+                // productName: item.productName,
+                // productQuantity: item.quantity.toString()
+            };
 
-        const result = await assignMultipleCartItems(assignments);
+        const assignments = await createDeliveryAssignment(assignmentsToCreate);
 
         res.status(200).json({
             message: 'Successfully Assigned Cart Items For Delivery',
-            data: result
+            data: assignments
         });
     }
     catch (err) {

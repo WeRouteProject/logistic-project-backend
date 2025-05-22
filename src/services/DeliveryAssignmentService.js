@@ -3,11 +3,13 @@ import { DELIVERY_STATUS } from "../constants/deliveryStatus.js";
 import USER_ROLE from "../constants/userRole.js";
 import CartItem from "../models/CartItem.js";
 import User from "../models/User.js";
-import Product from "../models/Product.js";
+import db from '../config/db.js';
+const { sequelize } = db;
 
-export const assignMultipleCartItems = async (assignments) => {
-
-    return await DeliveryAssignment.bulkCreate(assignments);
+export const createDeliveryAssignment = async (assignmentData) => {
+    return await sequelize.transaction(async (t) => {
+        return await DeliveryAssignment.create(assignmentData, { transaction: t });
+    });
 };
 
 export const getAssignementsForDelivery = async (deliveryBoyId) => {
@@ -81,40 +83,33 @@ export const getAssignedDeliveryHistory = async (user) => {
             {
                 model: User,
                 attributes: ['username']
-            },
-            {
-                model: CartItem,
-                include: [
-                    {
-                        model: Product,
-                        attributes: ['productname']
-                    }
-                ]
             }
         ],
-        // order: [['createdAt', 'DESC']]
+        order: [['deliveryDate', 'DESC']]
     });
 
-    console.log(assignments);
-
     return assignments.map(item => {
-        const productName = item.dataValues.productName || item.CartItem?.Product?.productname;
-        const quantity = item.dataValues.productQuantity || item.cartItem?.quantity;
-        const deliveryBoy = item.User.username;
+        const deliveryBoy = item.User?.username || '';
+
+        /** @type {{ productName: string; quantity: number; }[]} */
+        const cartItems = item.cartItems || [];
+
+        const products = cartItems.map(ci => `${ci.productName} ${ci.quantity}`).join(', ');
+        const quantities = cartItems.map(ci => ci.quantity).join(',');
 
         return {
-            assignmentId: item.id,
-            deliveryBoyName: `${deliveryBoy}`,
+            assignmentId: item.assignmentId,
+            deliveryBoyName: deliveryBoy,
             customer: item.customerName,
             address: item.deliveryAddress,
             deliveryDate: item.deliveryDate,
-            deliveryBoy: item.deliveryBoy?.username,
             status: item.status,
-            product: `${productName}`,
-            quantities: `${quantity}`
+            products,
+            quantities
         };
     });
 };
+
 
 
 

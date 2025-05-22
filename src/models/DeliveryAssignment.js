@@ -16,13 +16,9 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         field: 'assignmentid'
     },
 
-    cartItemId: {
-        type: DataTypes.INTEGER,
+    cartItems: {
+        type: DataTypes.JSONB,
         allowNull: false,
-        field: 'cartitemid',
-        validate: {
-            min: 1
-        }
     },
 
     deliveryBoyId: {
@@ -56,14 +52,6 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
             DELIVERY_STATUS.CANCELLED
         ),
         defaultValue: DELIVERY_STATUS.PENDING
-    },
-    productName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    productQuantity: {
-        type: DataTypes.STRING,
-        allowNull: false,
     }
 },
     {
@@ -72,8 +60,6 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         timestamps: false
     });
 
-// DeliveryAssignment.hasMany(DeliveryAssignment, {foreignKey: 'deliveryBoyId'});
 DeliveryAssignment.belongsTo(User, { foreignKey: 'deliveryBoyId' });
-DeliveryAssignment.belongsTo(CartItem, { foreignKey: 'cartItemId' });
 
 export default DeliveryAssignment;
