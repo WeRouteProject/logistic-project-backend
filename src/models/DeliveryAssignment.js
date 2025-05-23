@@ -1,6 +1,5 @@
-import { DataTypes } from "sequelize";
+import { Sequelize, DataTypes } from "sequelize";
 import db from '../config/db.js';
-import CartItem from '../models/CartItem.js';
 import User from '../models/User.js';
 import { DELIVERY_STATUS } from "../constants/deliveryStatus.js";
 
@@ -41,6 +40,18 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         type: DataTypes.DATE,
         allowNull: false,
         field: 'deliverydate'
+    },
+
+    price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0
+    },
+
+    orderDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
     },
 
     status: {
