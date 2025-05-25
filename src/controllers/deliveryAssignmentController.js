@@ -107,8 +107,19 @@ export const updateStatus = async (req, res) => {
 
 export const fetchAllAssignements = async (req, res) => {
     try {
-        const result = await getAllAssignments();
-        res.status(200).json(result);
+        const assignments = await getAllAssignments();
+        const formatted = assignments.map(item => ({
+            assignmentId: item.assignmentId,
+            deliveryBoyName: item.User?.username || 'N/A',
+            customer: item.customerName,
+            address: item.deliveryAddress,
+            deliveryDate: item.deliveryDate,
+            orderDate: item.orderDate,
+            price: item.price,
+            status: item.status
+        }));
+
+        res.status(200).json(formatted);
     }
     catch (err) {
         res.status(500).json({ error: err.message });

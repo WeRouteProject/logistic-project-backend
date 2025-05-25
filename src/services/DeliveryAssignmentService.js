@@ -1,4 +1,4 @@
-import  DeliveryAssignment  from "../models/DeliveryAssignment.js";
+import DeliveryAssignment from "../models/DeliveryAssignment.js";
 import { DELIVERY_STATUS } from "../constants/deliveryStatus.js";
 import USER_ROLE from "../constants/userRole.js";
 import CartItem from "../models/CartItem.js";
@@ -15,13 +15,13 @@ export const createDeliveryAssignment = async (assignmentData) => {
 export const getAssignementsForDelivery = async (deliveryBoyId) => {
     return await DeliveryAssignment.findAll({
         where: { deliveryBoyId },
-        include: [{model: CartItem}]   
+        include: [{ model: CartItem }]
     })
 };
 
 export const getAssignementsStatus = async (assignmentId, newStatus) => {
     const assignment = await DeliveryAssignment.findByPk(assignmentId);
-    if(!assignment)
+    if (!assignment)
         throw new Error('Assignment not found');
 
     assignment.status = newStatus;
@@ -29,7 +29,14 @@ export const getAssignementsStatus = async (assignmentId, newStatus) => {
 }
 
 export const getAllAssignments = async () => {
-    return await DeliveryAssignment.findAll();
+    return await DeliveryAssignment.findAll({
+        include: [
+            {
+                model: User,
+                attributes: ['username']
+            }
+        ],
+    });
 }
 
 export const getDeliveryAssignmentStats = async (deliveryBoyId = null) => {
