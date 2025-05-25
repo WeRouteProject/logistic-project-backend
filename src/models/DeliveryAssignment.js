@@ -25,6 +25,12 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         allowNull: false,
     },
 
+    deliveryBoyName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+
+
     customerName: {
         type: DataTypes.STRING,
         field: 'customername'

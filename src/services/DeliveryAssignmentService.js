@@ -29,14 +29,7 @@ export const getAssignementsStatus = async (assignmentId, newStatus) => {
 }
 
 export const getAllAssignments = async () => {
-    return await DeliveryAssignment.findAll({
-        include: [
-            {
-                model: User,
-                attributes: ['username']
-            }
-        ],
-    });
+    return await DeliveryAssignment.findAll();
 }
 
 export const getDeliveryAssignmentStats = async (deliveryBoyId = null) => {

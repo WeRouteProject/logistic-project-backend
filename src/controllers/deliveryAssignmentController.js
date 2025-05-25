@@ -8,6 +8,7 @@ import {
 } from '../services/DeliveryAssignmentService.js';
 import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
+import User from '../models/User.js';
 import { DELIVERY_STATUS } from '../constants/deliveryStatus.js';
 
 export const assignCartItems = async (req, res) => {
@@ -28,6 +29,12 @@ export const assignCartItems = async (req, res) => {
         const uniqueCartItemIds = [...new Set(cartItemIds)];
         if (cartItemIds.length !== uniqueCartItemIds.length) {
             return res.status(400).json({ error: 'Duplicate cartItemIds are not allowed' });
+        }
+
+        const deliveryBoy = await User.findByPk(deliveryBoyId);
+
+        if (!deliveryBoy) {
+            throw new Error('Delivery boy not found');
         }
 
         const cartItemDetails = await Promise.all(
@@ -59,6 +66,7 @@ export const assignCartItems = async (req, res) => {
         const assignmentsToCreate = {
             cartItems: cartItemDetails,
             deliveryBoyId,
+            deliveryBoyName: deliveryBoy.username,
             customerName,
             deliveryAddress,
             deliveryDate,
@@ -108,18 +116,7 @@ export const updateStatus = async (req, res) => {
 export const fetchAllAssignements = async (req, res) => {
     try {
         const assignments = await getAllAssignments();
-        const formatted = assignments.map(item => ({
-            assignmentId: item.assignmentId,
-            deliveryBoyName: item.User?.username || 'N/A',
-            customer: item.customerName,
-            address: item.deliveryAddress,
-            deliveryDate: item.deliveryDate,
-            orderDate: item.orderDate,
-            price: item.price,
-            status: item.status
-        }));
-
-        res.status(200).json(formatted);
+        res.status(200).json(assignments);
     }
     catch (err) {
         res.status(500).json({ error: err.message });
