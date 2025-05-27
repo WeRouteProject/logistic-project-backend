@@ -17,6 +17,8 @@ export const assignCartItems = async (req, res) => {
             cartItems,
             deliveryBoyId,
             customerName,
+            customerNumber,
+            customerEmail,
             deliveryAddress,
             deliveryDate,
             status } = req.body;
@@ -68,6 +70,8 @@ export const assignCartItems = async (req, res) => {
             deliveryBoyId,
             deliveryBoyName: deliveryBoy.username,
             customerName,
+            customerNumber,
+            customerEmail,
             deliveryAddress,
             deliveryDate,
             price: totalPrice,
