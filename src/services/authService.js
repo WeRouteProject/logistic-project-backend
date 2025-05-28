@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import dotenv from 'dotenv';
+import USER_ROLES from '../constants/userRole.js';
 dotenv.config();
 
 export const registerUser = async ({ username, email, password, role }) => {
@@ -28,4 +29,11 @@ export const loginUser = async ({ email, password }) => {
   );
 
   return { token, id: user.userId, role: user.role, email: user.email };
+};
+
+export const getAllDeliveryBoys = async () => {
+  return await User.findAll({
+    where: {role: USER_ROLES.DELIVERY},
+    attributes: ['userId', 'username', 'email']
+  });
 };

@@ -17,3 +17,12 @@ export const login = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getDeliveryBoys = async (req, res) => {
+  try{
+    const deliveryBoys = await authService.getAllDeliveryBoys();
+    res.status(200).json(deliveryBoys);
+  }catch(error){
+    res.status(500).json({message: error.message});
+  }
+}
