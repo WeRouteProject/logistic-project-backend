@@ -32,6 +32,11 @@ const Product = sequelize.define('Product', {
         field: 'description'
     },
 
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
     price: {
         type: DataTypes.FLOAT,
         allowNull: false,

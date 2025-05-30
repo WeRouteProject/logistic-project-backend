@@ -1,4 +1,5 @@
 import * as categoryService from '../services/CategoryService.js';
+import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
 export const createCategory = async (req, res) => {
     try {
@@ -8,7 +9,12 @@ export const createCategory = async (req, res) => {
             res.status(400).json({ message: 'Name is required' });
         }
 
-        const category = await categoryService.createCategory({ categoryName });
+        let imageUrl = '';
+        if (req.file) {
+            imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
+        }
+
+        const category = await categoryService.createCategory({ categoryName, imageUrl });
         res.status(201).json(category);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -20,20 +26,28 @@ export const updateCategory = async (req, res) => {
         const { categoryName } = req.body;
 
         if (!categoryName || categoryName.trim() === '') {
-            res.status(400).json({ message: 'Name is required' });
+            return res.status(400).json({ message: 'Category name is required' });
         }
 
-        const category = await categoryService.updateCategory(req.params.id, { categoryName });
-        res.status(200).json(
-            {
-                message: 'Category updated successfully',
-                data: category
-            }
-        );
+        let imageUrl = '';
+        if (req.file) {
+            imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
+        }
+
+        const updateData = { categoryName };
+        if (imageUrl) {
+            updateData.imageUrl = imageUrl;
+        }
+
+        const category = await categoryService.updateCategory(req.params.id, updateData);
+        res.status(200).json({
+            message: 'Category updated successfully',
+            data: category
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
 
 export const getAllCategories = async (req, res) => {
     try {
@@ -56,7 +70,7 @@ export const getCategoryById = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
 
 export const deleteCategory = async (req, res) => {
     try {

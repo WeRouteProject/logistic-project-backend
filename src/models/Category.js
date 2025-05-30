@@ -24,7 +24,13 @@ const Category = sequelize.define('Category', {
                 msg: 'Category name is required.'
             }
         }
+    },
+
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
+
 },
     {
         tableName: 'Categories',

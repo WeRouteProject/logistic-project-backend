@@ -5,11 +5,15 @@ export const createCategory = async (data) => {
 };
 
 export const getAllCategories = async () => {
-    return await Category.findAll();
+    return await Category.findAll({
+        attributes: ['categoryId', 'categoryName', 'imageUrl']
+    });
 }
 
 export const getCategoriesById = async (id) => {
-    return await Category.findByPk(id);
+    return await Category.findByPk(id, {
+        attributes: ['categoryId', 'categoryName', 'imageUrl']
+    });
 }
 
 export const updateCategory = async (id, data) => {

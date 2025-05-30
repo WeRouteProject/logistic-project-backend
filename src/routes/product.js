@@ -1,4 +1,5 @@
 import express from 'express';
+import upload from '../middlewares/multer.js';
 
 import {
     createProduct,
@@ -11,7 +12,8 @@ import {
 
 const router = express.Router();
 
-router.post('/', createProduct);
+// router.post('/product',upload.single('image'), createProduct);
+router.post('/', upload.single('image'), createProduct);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
 router.get('/category/:categoryId', getProductByCatId);
