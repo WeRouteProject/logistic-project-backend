@@ -2,14 +2,11 @@ import { v2 as cloudinary } from 'cloudinary';
 import stream from 'stream';
 
 cloudinary.config({
-  cloud_name: "dkv2ptzep",
-  api_key:    "447645633855624",
-  api_secret: "n4dOXwg74d-dyrocDIOxUwRDgK8"
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// CLOUDINARY_CLOUD_NAME=dkv2ptzep
-// CLOUDINARY_API_KEY=447645633855624
-// CLOUDINARY_API_SECRET=n4dOXwg74d-dyrocDIOxUwRDgK8
 
 export const uploadToCloudinary = (fileBuffer, folder, filename = 'image.jpg') => {
   return new Promise((resolve, reject) => {
