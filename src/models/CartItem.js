@@ -22,7 +22,12 @@ const CartItem = sequelize.define('CartItem', {
 
     productId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'Products',
+            key: 'productId'
+        },
+        onDelete: 'CASCADE'
     },
     quantity: {
         type: DataTypes.INTEGER,
@@ -32,13 +37,13 @@ const CartItem = sequelize.define('CartItem', {
         }
     }
 },
-{
-    tableName: 'CartItem',
-    'freezeTableName': true,
-    timestamps: false 
-});
+    {
+        tableName: 'CartItem',
+        'freezeTableName': true,
+        timestamps: false
+    });
 
-CartItem.belongsTo(User, {foreignKey: 'userId'});
-CartItem.belongsTo(Product, {foreignKey: 'productId'});
+CartItem.belongsTo(User, { foreignKey: 'userId' });
+CartItem.belongsTo(Product, { foreignKey: 'productId', onDelete: 'CASCADE' });
 
 export default CartItem;
