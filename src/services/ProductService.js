@@ -5,10 +5,11 @@ export const createProduct = async (data) => {
 }
 
 export const getAllProducts = async () => {
-    return await Product.findByPk(id, {
+    return await Product.findAll({
         attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId']
     });
-}
+};
+
 
 export const getProductById = async (id) => {
     return await Product.findByPk(id);

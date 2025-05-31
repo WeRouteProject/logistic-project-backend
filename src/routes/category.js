@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/category', upload.single('image'), createCategory);
 router.get('/', getAllCategories);
 router.get('/:id', getCategoryById);
-router.put('/:id', updateCategory);
+router.put('/:id', upload.single('image'), updateCategory);
 router.delete('/:id', deleteCategory);
 
 export default router;

@@ -29,7 +29,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await productService.getAllProducts(req.params.id);
+        const products = await productService.getAllProducts();
         res.status(200).json(products);
     }
     catch (err) {
@@ -71,21 +71,31 @@ export const getProductByCatId = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-    try {
-        const { productName, description, price, categoryId } = req.body;
+  try {
+    const { productName, description, price, categoryId } = req.body;
 
-        if (!productName || !price || !categoryId) {
-            return res.status(400).json({ message: 'Product name, price, and category are required' });
-        }
-        const updatedProduct = await productService.updateProduct(req.params.id, {
-            productName, description, price, categoryId
-        })
-        res.status(200).json({ message: 'Product updated successfully', data: updatedProduct });
+    let imageUrl = '';
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.buffer, 'products', req.file.originalname);
     }
-    catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+
+    const updateData = {};
+
+    // Only add fields if they are provided (non-empty)
+    if (productName) updateData.productName = productName;
+    if (description) updateData.description = description;
+    if (price) updateData.price = price;
+    if (categoryId) updateData.categoryId = categoryId;
+    if (imageUrl) updateData.imageUrl = imageUrl;
+
+    const updatedProduct = await productService.updateProduct(req.params.id, updateData);
+
+    res.status(200).json({ message: 'Product updated successfully', data: updatedProduct });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
+
 
 export const deleteProduct = async (req, res) => {
     try {
