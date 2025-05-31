@@ -1,4 +1,5 @@
 import * as authService from '../services/authService.js';
+import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {
@@ -26,4 +27,25 @@ export const getDeliveryBoys = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
+
+export const logout = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "No token provided, please log in again." });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err) => {
+      if (err) {
+        return res.status(401).json({ error: "Invalid token, please log in again." });
+      }
+
+      return res.status(200).json({ message: "Logged out successfully" });
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
