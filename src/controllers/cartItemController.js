@@ -19,7 +19,8 @@ export const addToCart = async (req, res) => {
 
 export const fetchCart = async (req, res) => {
     try {
-        const result = await getCartItems();
+        const userId = req.user.id;
+        const result = await getCartItems(userId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
