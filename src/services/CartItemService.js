@@ -25,8 +25,9 @@ export const addOrUpdateCartItem = async (userId, productId, quantity) => {
     return await CartItem.create({ userId, productId, quantity });
 };
 
-export const getCartItems = async () => {
+export const getCartItems = async (userId) => {
     return await CartItem.findAll({
+        where: {userId},
         include: [{ model: Product, attributes: ['productName', 'price'] }]
     });
 };
