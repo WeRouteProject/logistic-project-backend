@@ -51,10 +51,17 @@ const Product = sequelize.define('Product', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-      model: 'Category',
-      key: 'categoryid',
+            model: 'Category',
+            key: 'categoryid',
+        },
+        onDelete: 'CASCADE',
     },
-    onDelete: 'CASCADE',
+
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'status'
     }
 },
 

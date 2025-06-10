@@ -3,7 +3,7 @@ import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
 export const createCategory = async (req, res) => {
     try {
-        const { categoryName } = req.body;
+        const { categoryName, status } = req.body;
 
         if (!categoryName || categoryName.trim() === '') {
             res.status(400).json({ message: 'Name is required' });
@@ -14,7 +14,7 @@ export const createCategory = async (req, res) => {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
         }
 
-        const category = await categoryService.createCategory({ categoryName, imageUrl });
+        const category = await categoryService.createCategory({ categoryName, imageUrl, status });
         res.status(201).json(category);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -23,7 +23,7 @@ export const createCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
     try {
-        const { categoryName } = req.body;
+        const { categoryName, status } = req.body;
 
         if (!categoryName || categoryName.trim() === '') {
             return res.status(400).json({ message: 'Category name is required' });
@@ -34,7 +34,7 @@ export const updateCategory = async (req, res) => {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
         }
 
-        const updateData = { categoryName };
+        const updateData = { categoryName, status };
         if (imageUrl) {
             updateData.imageUrl = imageUrl;
         }

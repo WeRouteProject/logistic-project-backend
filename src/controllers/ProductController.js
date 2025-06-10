@@ -3,7 +3,7 @@ import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
 export const createProduct = async (req, res) => {
     try {
-        const { productName, description, price, categoryId } = req.body;
+        const { productName, description, price, categoryId, status } = req.body;
 
         if (!productName || !price || !categoryId) {
             return res.status(400).json({ message: 'Product name, price, and category are required' });
@@ -14,7 +14,7 @@ export const createProduct = async (req, res) => {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'products');
         }
 
-        const newProduct = await productService.createProduct({ productName, description, price, categoryId, imageUrl });
+        const newProduct = await productService.createProduct({ productName, description, price, categoryId, imageUrl, status });
         res.status(201).json(
             {
                 message: 'Product created successfully',
@@ -72,7 +72,7 @@ export const getProductByCatId = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { productName, description, price, categoryId } = req.body;
+    const { productName, description, price, categoryId, status } = req.body;
 
     let imageUrl = '';
     if (req.file) {
@@ -86,6 +86,7 @@ export const updateProduct = async (req, res) => {
     if (description) updateData.description = description;
     if (price) updateData.price = price;
     if (categoryId) updateData.categoryId = categoryId;
+    if(status) updateData.status = status;
     if (imageUrl) updateData.imageUrl = imageUrl;
 
     const updatedProduct = await productService.updateProduct(req.params.id, updateData);
