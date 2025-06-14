@@ -9,12 +9,14 @@ export const createProduct = async (req, res) => {
             return res.status(400).json({ message: 'Product name, price, and category are required' });
         }
 
+        const parsedStatus = status === 'false' || status === false ? false : true;
+
          let imageUrl = '';
         if (req.file) {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'products');
         }
 
-        const newProduct = await productService.createProduct({ productName, description, price, categoryId, imageUrl, status });
+        const newProduct = await productService.createProduct({ productName, description, price, categoryId, imageUrl, status: parsedStatus });
         res.status(201).json(
             {
                 message: 'Product created successfully',
@@ -74,6 +76,8 @@ export const updateProduct = async (req, res) => {
   try {
     const { productName, description, price, categoryId, status } = req.body;
 
+    const parsedStatus = status === 'false' || status === false ? false : true;
+
     let imageUrl = '';
     if (req.file) {
       imageUrl = await uploadToCloudinary(req.file.buffer, 'products', req.file.originalname);
@@ -86,7 +90,7 @@ export const updateProduct = async (req, res) => {
     if (description) updateData.description = description;
     if (price) updateData.price = price;
     if (categoryId) updateData.categoryId = categoryId;
-    if(status) updateData.status = status;
+    if(status) updateData.status = parsedStatus;
     if (imageUrl) updateData.imageUrl = imageUrl;
 
     const updatedProduct = await productService.updateProduct(req.params.id, updateData);

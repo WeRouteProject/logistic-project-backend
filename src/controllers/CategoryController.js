@@ -9,12 +9,14 @@ export const createCategory = async (req, res) => {
             res.status(400).json({ message: 'Name is required' });
         }
 
+        const parsedStatus = status === 'false' || status === false ? false : true;
+
         let imageUrl = '';
         if (req.file) {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
         }
 
-        const category = await categoryService.createCategory({ categoryName, imageUrl, status });
+        const category = await categoryService.createCategory({ categoryName, imageUrl, status: parsedStatus });
         res.status(201).json(category);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -29,12 +31,14 @@ export const updateCategory = async (req, res) => {
             return res.status(400).json({ message: 'Category name is required' });
         }
 
+        const parsedStatus = status === 'false' || status === false ? false : true;
+
         let imageUrl = '';
         if (req.file) {
             imageUrl = await uploadToCloudinary(req.file.buffer, 'categories');
         }
 
-        const updateData = { categoryName, status };
+        const updateData = { categoryName, status: parsedStatus };
         if (imageUrl) {
             updateData.imageUrl = imageUrl;
         }
