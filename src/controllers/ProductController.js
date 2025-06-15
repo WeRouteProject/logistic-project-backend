@@ -90,7 +90,7 @@ export const updateProduct = async (req, res) => {
     if (description) updateData.description = description;
     if (price) updateData.price = price;
     if (categoryId) updateData.categoryId = categoryId;
-    if(status) updateData.status = parsedStatus;
+    if(status !== undefined) updateData.status = parsedStatus;
     if (imageUrl) updateData.imageUrl = imageUrl;
 
     const updatedProduct = await productService.updateProduct(req.params.id, updateData);

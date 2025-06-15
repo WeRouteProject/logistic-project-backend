@@ -6,13 +6,15 @@ export const createProduct = async (data) => {
 
 export const getAllProducts = async () => {
     return await Product.findAll({
-        attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId']
+        attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId', 'status'],
     });
 };
 
 
 export const getProductById = async (id) => {
-    return await Product.findByPk(id);
+    return await Product.findByPk(id, {
+        attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId', 'status']
+    });
 }
 
 export const getProductByCategoryId = async (categoryId) => {
@@ -24,7 +26,7 @@ export const getProductByCategoryId = async (categoryId) => {
         where: {
             categoryId: categoryId
         },
-        attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId']
+        attributes: ['productId', 'productName', 'description', 'imageUrl', 'price', 'categoryId', 'status']
     })
 }
 
