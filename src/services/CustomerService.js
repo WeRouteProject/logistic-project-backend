@@ -1,7 +1,7 @@
 import Customer from '../models/Customer.js';
 
 export const createCustomer = async (customerData) => {
-    const { customerName, email, address, contactNumber } = customerData;
+    const { customerName, email, address, contactNumber, wallet, remainingCredit, discount } = customerData;
 
     if (!customerName) {
         throw new Error('Customer name is required');
@@ -44,6 +44,9 @@ export const createCustomer = async (customerData) => {
         email,
         address,
         contactNumber: normalizedContactNumber,
+        wallet,
+        remainingCredit,
+        discount
     });
 
     return customer;
@@ -62,7 +65,7 @@ export const getCustomerById = async (customerId) => {
 };
 
 export const updateCustomer = async (customerId, updateData) => {
-    const { customerName, email, address, contactNumber } = updateData;
+    const { customerName, email, address, contactNumber, wallet, remainingCredit, discount } = updateData;
 
     const customer = await Customer.findByPk(customerId);
     if (!customer) {
@@ -104,6 +107,10 @@ export const updateCustomer = async (customerId, updateData) => {
         email: typeof email !== 'undefined' ? email : customer.email,
         address: address || customer.address,
         contactNumber: normalizedContactNumber || customer.contactNumber,
+        wallet: typeof updateData.wallet !== 'undefined' ? updateData.wallet : customer.wallet,
+        remainingCredit: typeof updateData.remainingCredit !== 'undefined' ? updateData.remainingCredit : customer.remainingCredit,
+        discount: typeof updateData.discount !== 'undefined' ? updateData.discount : customer.discount,
+
     });
 
     return customer;

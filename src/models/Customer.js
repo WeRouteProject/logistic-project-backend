@@ -43,6 +43,36 @@ const Customer = sequelize.define('Customer', {
         allowNull: false,
     },
 
+    wallet: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        defaultValue: 0.0,
+        validate: {
+            isFloat: { msg: 'Wallet balance must be a valid number' },
+            min: [0, 'Wallet balance cannot be negative' ],
+        },
+    },
+
+    remainingCredit: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        defaultValue: 0.0,
+        validate: {
+            isFloat: { msg: 'Remaining credit must be a valid number' },
+            min: [0, 'Remaining credit cannot be negative' ],
+        },
+    },
+
+    discount: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        defaultValue: 0.0,
+        validate: {
+            isFloat: { msg: 'Discount must be a valid number' },
+            min: [0, 'Discount cannot be negative' ],
+        },
+    },
+
     contactNumber: {
         type: DataTypes.STRING, 
         allowNull: false,

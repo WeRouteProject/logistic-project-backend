@@ -8,6 +8,7 @@ import {
 } from '../services/DeliveryAssignmentService.js';
 import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
+import Customer from '../models/Customer.js';
 import User from '../models/User.js';
 import { DELIVERY_STATUS } from '../constants/deliveryStatus.js';
 
@@ -16,6 +17,7 @@ export const assignCartItems = async (req, res) => {
         const {
             cartItems,
             deliveryBoyId,
+            customerId,
             customerName,
             customerNumber,
             customerEmail,
@@ -65,6 +67,12 @@ export const assignCartItems = async (req, res) => {
             0
         );
 
+        const customer = await Customer.findByPk(customerId);
+        if (!customer) throw new Error('Customer not found');
+
+        const discountPercentage = customer.discount || 0;
+        const discountedPrice = totalPrice - (totalPrice * discountPercentage / 100);
+
         const assignmentsToCreate = {
             cartItems: cartItemDetails,
             deliveryBoyId,
@@ -75,8 +83,12 @@ export const assignCartItems = async (req, res) => {
             deliveryAddress,
             deliveryDate,
             price: totalPrice,
+            discountedPrice,
             status: status || DELIVERY_STATUS.ASSIGNED,
         };
+
+        const newRemainingCredit = Math.max(0, customer.remainingCredit - discountedPrice);
+        await customer.update({ remainingCredit: newRemainingCredit });
 
         const assignments = await createDeliveryAssignment(assignmentsToCreate);
 

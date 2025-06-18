@@ -1,4 +1,3 @@
-// src/controllers/CustomerController.js
 import {
     createCustomer,
     getAllCustomers,
@@ -9,7 +8,7 @@ import {
 
 export const createCustomerHandler = async (req, res) => {
     try {
-        const { customerName, email, address, contactNumber } = req.body;
+        const { customerName, email, address, contactNumber, wallet, remainingCredit, discount } = req.body;
 
         if (!customerName) {
             return res.status(400).json({ error: 'Customer name is required' });
@@ -42,11 +41,29 @@ export const createCustomerHandler = async (req, res) => {
             return res.status(400).json({ error: 'Invalid contact number format (e.g., +919876543210 or 9876543210)' });
         }
 
+        const walletFloat = parseFloat(wallet);
+        if (isNaN(walletFloat) || walletFloat < 0) {
+            return res.status(400).json({ error: 'Wallet balance must be a valid number'});
+            }
+
+        const remainingCreditFloat = parseFloat(remainingCredit);
+        if(isNaN(remainingCreditFloat) || remainingCreditFloat < 0){
+           return res.status(400).json({ error: 'Remaining Credit balance must be a valid number'}); 
+        }
+
+        const discountFloat = parseFloat(discount);
+        if(isNaN(discountFloat) || discountFloat < 0){
+           return res.status(400).json({ error: 'Discount must be a valid number'});  
+        }
+
         const customer = await createCustomer({
             customerName,
             email,
             address,
             contactNumber,
+            wallet: walletFloat,
+            remainingCredit: remainingCreditFloat,
+            discount: discountFloat,
         });
 
         res.status(201).json({
@@ -57,6 +74,9 @@ export const createCustomerHandler = async (req, res) => {
                 email: customer.email,
                 address: customer.address,
                 contactNumber: customer.contactNumber,
+                wallet: customer.wallet,
+                remainingCredit: customer.remainingCredit,
+                discount: customer.discount,
             },
         });
     } catch (err) {
@@ -92,7 +112,7 @@ export const getCustomerByIdHandler = async (req, res) => {
 export const updateCustomerHandler = async (req, res) => {
     try {
         const { id } = req.params;
-        const { customerName, email, address, contactNumber } = req.body;
+        const { customerName, email, address, contactNumber, wallet, remainingCredit, discount} = req.body;
 
         if (customerName) {
             if (customerName.length < 3 || customerName.length > 20) {
@@ -119,11 +139,29 @@ export const updateCustomerHandler = async (req, res) => {
             }
         }
 
+        const walletFloat = parseFloat(wallet);
+        if (isNaN(walletFloat) || walletFloat < 0) {
+            return res.status(400).json({ error: 'Wallet balance must be a valid number'});
+            }
+
+        const remainingCreditFloat = parseFloat(remainingCredit);
+        if(isNaN(remainingCreditFloat) || remainingCreditFloat < 0){
+           return res.status(400).json({ error: 'Remaining Credit balance must be a valid number'}); 
+        }
+
+        const discountFloat = parseFloat(discount);
+        if(isNaN(discountFloat) || discountFloat < 0){
+           return res.status(400).json({ error: 'Discount must be a valid number'});  
+        }
+
         const updatedCustomer = await updateCustomer(id, {
             customerName,
             email,
             address,
             contactNumber,
+            wallet: walletFloat,
+            remainingCredit: remainingCreditFloat,
+            discount: discountFloat,
         });
 
         res.status(200).json({
@@ -134,6 +172,9 @@ export const updateCustomerHandler = async (req, res) => {
                 email: updatedCustomer.email,
                 address: updatedCustomer.address,
                 contactNumber: updatedCustomer.contactNumber,
+                wallet: updatedCustomer.wallet,
+                remainingCredit: updatedCustomer.remainingCredit,
+                discount: updatedCustomer.discount
             },
         });
     } catch (err) {

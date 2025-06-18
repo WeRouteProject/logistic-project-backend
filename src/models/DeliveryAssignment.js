@@ -62,6 +62,12 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         defaultValue: 0.0
     },
 
+    discountedPrice: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0
+    },
+
     orderDate: {
         type: DataTypes.DATE,
         allowNull: false,
