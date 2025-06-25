@@ -15,7 +15,6 @@ export const createDeliveryAssignment = async (assignmentData) => {
 export const getAssignementsForDelivery = async (deliveryBoyId) => {
     return await DeliveryAssignment.findAll({
         where: { deliveryBoyId },
-        include: [{ model: CartItem }]
     })
 };
 
