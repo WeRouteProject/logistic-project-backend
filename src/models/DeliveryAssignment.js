@@ -68,6 +68,19 @@ const DeliveryAssignment = sequelize.define('DeliveryAssignment', {
         defaultValue: 0.0
     },
 
+    deliveryNote: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '',
+        validate: {
+            len: {
+                args: [0, 255],
+                msg: 'Note can be up to 255 characters only',
+            },
+        },
+    },
+
+
     orderDate: {
         type: DataTypes.DATE,
         allowNull: false,

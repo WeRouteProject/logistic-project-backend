@@ -11,6 +11,7 @@ import Product from '../models/Product.js';
 import Customer from '../models/Customer.js';
 import User from '../models/User.js';
 import { DELIVERY_STATUS } from '../constants/deliveryStatus.js';
+import DeliveryAssignment from '../models/DeliveryAssignment.js';
 
 export const assignCartItems = async (req, res) => {
     try {
@@ -25,6 +26,7 @@ export const assignCartItems = async (req, res) => {
             deliveryDate,
             status,
             discountedPrice,
+            deliveryNote,
         } = req.body;
 
         if (!Array.isArray(cartItems) || cartItems.length === 0) {
@@ -90,6 +92,7 @@ export const assignCartItems = async (req, res) => {
             price: totalPrice,
             discountedPrice,
             status: status || DELIVERY_STATUS.ASSIGNED,
+            deliveryNote: (status === DELIVERY_STATUS.PARTIAL_DELIVERY || status === DELIVERY_STATUS.CANCELLED) ? deliveryNote : null
         };
 
         const newRemainingCredit = customer.remainingCredit - discountedPrice;
@@ -122,9 +125,9 @@ export const getAllMyAssignments = async (req, res) => {
 export const updateStatus = async (req, res) => {
     try {
         const { assignmentId } = req.params;
-        const { status } = req.body;
+        const { status, deliveryNote } = req.body;
 
-        const updatedStatus = await getAssignementsStatus(assignmentId, status);
+        const updatedStatus = await getAssignementsStatus(assignmentId, status, deliveryNote);
         res.status(200).json({
             message: 'Delivery Status Updated: ',
             data: updatedStatus
@@ -172,3 +175,25 @@ export const getDeliveryHistory = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+export const getUpdatedStatus = async (req, res) => {
+    try {
+        const { assignmentId } = req.params;
+
+        const assignment = await DeliveryAssignment.findByPk(assignmentId, {
+            attributes: ['assignmentId', 'status', 'deliveryNote', 'deliveryDate', 'orderDate']
+        });
+
+        if (!assignment) {
+            return res.status(404).json({ error: 'Assignment not found' });
+        }
+
+        res.status(200).json({
+            message: 'Delivery status fetched successfully',
+            data: assignment
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+

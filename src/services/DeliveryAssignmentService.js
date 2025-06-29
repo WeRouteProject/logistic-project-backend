@@ -18,12 +18,15 @@ export const getAssignementsForDelivery = async (deliveryBoyId) => {
     })
 };
 
-export const getAssignementsStatus = async (assignmentId, newStatus) => {
+export const getAssignementsStatus = async (assignmentId, newStatus, deliveryNote = null) => {
     const assignment = await DeliveryAssignment.findByPk(assignmentId);
     if (!assignment)
         throw new Error('Assignment not found');
 
     assignment.status = newStatus;
+    if ((newStatus === DELIVERY_STATUS.PARTIAL_DELIVERY || newStatus === DELIVERY_STATUS.CANCELLED)  && deliveryNote) {
+        assignment.deliveryNote = deliveryNote;
+    }
     return await assignment.save();
 }
 
@@ -102,7 +105,8 @@ export const getAssignedDeliveryHistory = async (user) => {
             deliveryDate: item.deliveryDate,
             status: item.status,
             products,
-            quantities
+            quantities,
+            deliveryNote: item.deliveryNote
         };
     });
 };
