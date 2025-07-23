@@ -4,7 +4,8 @@ import {
     getAssignementsStatus,
     getAllAssignments,
     getDeliveryAssignmentStats,
-    getAssignedDeliveryHistory
+    getAssignedDeliveryHistory,
+    getDeliveryHistoryByDate
 } from '../services/DeliveryAssignmentService.js';
 import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
@@ -197,3 +198,19 @@ export const getUpdatedStatus = async (req, res) => {
     }
 };
 
+export const fetchDeliveryHistoryByDate = async (req, res) => {
+    try {
+        const { date } = req.query;
+
+        if (!date) {
+            return res.status(400).json({ error: 'Date is required in YYYY-MM-DD format.' });
+        }
+
+        const deliveries = await getDeliveryHistoryByDate(date);
+        console.log('Fetching deliveries for date:', date);
+        res.status(200).json(deliveries);
+    } catch (err) {
+        console.error('Error fetching delivery history:', err.message);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};

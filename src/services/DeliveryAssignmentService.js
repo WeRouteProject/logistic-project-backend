@@ -1,7 +1,7 @@
 import DeliveryAssignment from "../models/DeliveryAssignment.js";
 import { DELIVERY_STATUS } from "../constants/deliveryStatus.js";
 import USER_ROLE from "../constants/userRole.js";
-import CartItem from "../models/CartItem.js";
+import { Op, fn, col, where } from "sequelize";
 import User from "../models/User.js";
 import db from '../config/db.js';
 const { sequelize } = db;
@@ -111,7 +111,26 @@ export const getAssignedDeliveryHistory = async (user) => {
     });
 };
 
+export const getDeliveryHistoryByDate = async (date) => {
+    const allowedStatuses = [
+        DELIVERY_STATUS.DELIVERED,
+        DELIVERY_STATUS.CANCELLED,
+        DELIVERY_STATUS.PARTIAL_DELIVERY
+    ];
 
+    const deliveries = await DeliveryAssignment.findAll({
+        where: {
+            status: {
+                [Op.in]: allowedStatuses
+            },
+            [Op.and]: where(
+                fn('DATE', col('deliverydate')),
+                '=',
+                date
+            )
+        },
+        order: [['deliverydate', 'DESC']],
+    });
 
-
-
+    return deliveries;
+};

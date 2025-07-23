@@ -1,13 +1,24 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { Sequelize } from 'sequelize';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const sequelize = new Sequelize(process.env.STAGING_DATABASE_URL, {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const currentEnv = process.env.NODE_ENV || 'development';
+dotenv.config({ path: path.resolve(__dirname, `.env.${currentEnv}`) });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+const databaseUrl = 
+process.env.DATABASE_URL || 
+`postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+
+console.log("Final database url:", databaseUrl);
+const sequelize = new Sequelize(databaseUrl, {
   dialect: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,          // Ensures SSL is required
-      rejectUnauthorized: false // Disable SSL certificate validation (if needed)
-    },
-  },
   logging: false,
   pool: {
     max: 5,
