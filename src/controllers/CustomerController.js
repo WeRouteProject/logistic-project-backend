@@ -112,7 +112,11 @@ export const getCustomerByIdHandler = async (req, res) => {
 export const updateCustomerHandler = async (req, res) => {
     try {
         const { id } = req.params;
-        const { customerName, email, address, contactNumber, wallet, remainingCredit, discount} = req.body;
+        const { customerName, email, address, contactNumber, wallet, remainingCredit, discount } = req.body;
+
+        if (!customerName && !email && !address && !contactNumber && wallet === undefined && remainingCredit === undefined && discount === undefined) {
+            return res.status(400).json({ error: 'At least one field must be provided to update' });
+        }
 
         if (customerName) {
             if (customerName.length < 3 || customerName.length > 20) {
@@ -123,7 +127,7 @@ export const updateCustomerHandler = async (req, res) => {
             }
         }
 
-        if (typeof email !== 'undefined' && email !== null) {
+        if (email !== undefined && email !== null) {
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(email)) {
                 return res.status(400).json({ error: 'Invalid email format' });
@@ -133,25 +137,23 @@ export const updateCustomerHandler = async (req, res) => {
             }
         }
 
-        if (contactNumber) {
-            if (!/^\+?[1-9]\d{9,14}$/.test(contactNumber)) {
-                return res.status(400).json({ error: 'Invalid contact number format (e.g., +919876543210 or 9876543210)' });
-            }
+        if (contactNumber && !/^\+?[1-9]\d{9,14}$/.test(contactNumber)) {
+            return res.status(400).json({ error: 'Invalid contact number format (e.g., +919876543210 or 9876543210)' });
         }
 
-        const walletFloat = parseFloat(wallet);
-        if (isNaN(walletFloat) || walletFloat < 0) {
-            return res.status(400).json({ error: 'Wallet balance must be a valid number'});
-            }
-
-        const remainingCreditFloat = parseFloat(remainingCredit);
-        if(isNaN(remainingCreditFloat) || remainingCreditFloat < 0){
-           return res.status(400).json({ error: 'Remaining Credit balance must be a valid number'}); 
+        const walletFloat = wallet !== undefined ? parseFloat(wallet) : undefined;
+        if (wallet !== undefined && (isNaN(walletFloat) || walletFloat < 0)) {
+            return res.status(400).json({ error: 'Wallet balance must be a valid number' });
         }
 
-        const discountFloat = parseFloat(discount);
-        if(isNaN(discountFloat) || discountFloat < 0){
-           return res.status(400).json({ error: 'Discount must be a valid number'});  
+        const remainingCreditFloat = remainingCredit !== undefined ? parseFloat(remainingCredit) : undefined;
+        if (remainingCredit !== undefined && (isNaN(remainingCreditFloat) || remainingCreditFloat < 0)) {
+            return res.status(400).json({ error: 'Remaining Credit balance must be a valid number' });
+        }
+
+        const discountFloat = discount !== undefined ? parseFloat(discount) : undefined;
+        if (discount !== undefined && (isNaN(discountFloat) || discountFloat < 0)) {
+            return res.status(400).json({ error: 'Discount must be a valid number' });
         }
 
         const updatedCustomer = await updateCustomer(id, {
@@ -164,9 +166,10 @@ export const updateCustomerHandler = async (req, res) => {
             discount: discountFloat,
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Customer updated successfully',
             data: {
+                
                 customerId: updatedCustomer.customerId,
                 customerName: updatedCustomer.customerName,
                 email: updatedCustomer.email,
@@ -174,11 +177,11 @@ export const updateCustomerHandler = async (req, res) => {
                 contactNumber: updatedCustomer.contactNumber,
                 wallet: updatedCustomer.wallet,
                 remainingCredit: updatedCustomer.remainingCredit,
-                discount: updatedCustomer.discount
+                discount: updatedCustomer.discount,
             },
         });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return res.status(400).json({ error: err.message });
     }
 };
 

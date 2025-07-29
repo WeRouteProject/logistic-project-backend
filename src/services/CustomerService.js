@@ -65,52 +65,24 @@ export const getCustomerById = async (customerId) => {
 };
 
 export const updateCustomer = async (customerId, updateData) => {
-    const { customerName, email, address, contactNumber, wallet, remainingCredit, discount } = updateData;
-
     const customer = await Customer.findByPk(customerId);
     if (!customer) {
         throw new Error('Customer not found');
     }
 
-    if (customerName) {
-        if (customerName.length < 3 || customerName.length > 20) {
-            throw new Error('Customer name must be between 3 and 20 characters');
-        }
-        if (!/^[a-zA-Z0-9 _-]+$/.test(customerName)) {
-            throw new Error('Customer name can only contain letters, numbers, underscores, or hyphens');
-        }
-    }
-
-    if (typeof email !== 'undefined' && email !== null) {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            throw new Error('Invalid email format');
-        }
-        if (email.length > 255) {
-            throw new Error('Email must be less than 255 characters');
-        }
-    }
-
-    if (contactNumber) {
-        if (!/^\+?[1-9]\d{9,14}$/.test(contactNumber)) {
-            throw new Error('Invalid contact number format (e.g., +919876543210 or 9876543210)');
-        }
-    }
-
-    let normalizedContactNumber = contactNumber;
-    if (contactNumber && !contactNumber.startsWith('+')) {
-        normalizedContactNumber = `+91${contactNumber}`; // Default to India (+91)
+    let normalizedContactNumber = updateData.contactNumber;
+    if (normalizedContactNumber && !normalizedContactNumber.startsWith('+')) {
+        normalizedContactNumber = `+91${normalizedContactNumber}`;
     }
 
     await customer.update({
-        customerName: customerName || customer.customerName,
-        email: typeof email !== 'undefined' ? email : customer.email,
-        address: address || customer.address,
-        contactNumber: normalizedContactNumber || customer.contactNumber,
-        wallet: typeof updateData.wallet !== 'undefined' ? updateData.wallet : customer.wallet,
-        remainingCredit: typeof updateData.remainingCredit !== 'undefined' ? updateData.remainingCredit : customer.remainingCredit,
-        discount: typeof updateData.discount !== 'undefined' ? updateData.discount : customer.discount,
-
+        customerName: updateData.customerName ?? customer.customerName,
+        email: updateData.email ?? customer.email,
+        address: updateData.address ?? customer.address,
+        contactNumber: normalizedContactNumber ?? customer.contactNumber,
+        wallet: updateData.wallet ?? customer.wallet,
+        remainingCredit: updateData.remainingCredit ?? customer.remainingCredit,
+        discount: updateData.discount ?? customer.discount
     });
 
     return customer;

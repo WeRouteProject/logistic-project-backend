@@ -9,8 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const currentEnv = process.env.NODE_ENV || 'development';
-dotenv.config({ path: path.resolve(__dirname, `.env.${currentEnv}`) });
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, `../../.env.${currentEnv}`) });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const databaseUrl = 
 process.env.DATABASE_URL || 

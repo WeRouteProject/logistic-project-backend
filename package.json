@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "start:dev": "NODE_ENV=development node -r dotenv/config src/index.js dotenv_config_path=.env.development",
-    "start:prod": "NODE_ENV=production node -r dotenv/config src/index.js dotenv_config_path=.env.production",
+    "start:prod": "NODE_ENV=production node src/index.js",
     "dev": "nodemon --require dotenv/config src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

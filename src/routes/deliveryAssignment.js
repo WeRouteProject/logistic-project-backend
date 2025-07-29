@@ -21,6 +21,4 @@ router.get('/all', ExistingUser, authorizeRole(['admin']), fetchAllAssignements)
 router.get('/stats/forDeliveryBoy', ExistingUser, authorizeRole(['admin', 'delivery']), getDeliveryStats);
 router.get('/history', ExistingUser, getDeliveryHistory);
 router.get('/delivery-status/:assignmentId', getUpdatedStatus);
-router.get('/history/by-date', fetchDeliveryHistoryByDate);
-
 export default router;
